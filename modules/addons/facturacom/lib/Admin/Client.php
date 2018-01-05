@@ -19,7 +19,7 @@ class Client
 
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_HEADER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
@@ -33,6 +33,11 @@ class Client
 
         try {
             $data = curl_exec($ch);
+
+            $Contentype = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+            $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+            $header = substr($data, 0, $header_size);
+            $body = substr($data, $header_size);
             curl_close($ch);
         } catch (Exception $e) {
             print('Exception occured: ' . $e->getMessage());
@@ -48,9 +53,14 @@ class Client
         . ' | api_response: ' . $data . "\n";
         fwrite($fh, $logRow);
         fclose($fh);
+        
+        if($Contentype == "application/json") {
+            return json_decode($body, true);
+        } else {
+            return $body;
+        }
 
-        //return array
-        return json_decode($data, true);
+
     }
 
     public function post($url, $params = null)
