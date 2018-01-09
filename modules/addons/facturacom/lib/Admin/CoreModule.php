@@ -2,8 +2,8 @@
 
 include_once dirname(__FILE__) . '/Client.php';
 use Illuminate\Database\Capsule\Manager as Capsule;
+use Carbon\Carbon;
 
-//require "../init.php";
 
 class CoreModule
 {
@@ -104,22 +104,17 @@ class CoreModule
                 $invoiceList[$value->id]["open"] = 'false';
             }
 
-            // Validate payment date vs current date
-            if ($order_month != $current_month) {
-                $order_day = date("d", strtotime($value->datepaid));
+            //vamos sobre el tiempo de tolerancia para facturar.
+            Carbon::setLocale('es');
+            $fpago = explode("-", date("Y-m-d", strtotime($value->datepaid)));
+            $dt = Carbon::createFromDate($fpago[0], $fpago[1], $fpago[2]);
 
-                if ($order_month < $current_month) {
-                    if (intval($current_day) > $configEntity['dayOff']) {
-                        $invoiceList[$value->id]["open"] = 'false';
-                    }
+            //Sacamos la diferencia
+            $diferenciaDicas =  ($dt->diffInDays(Carbon::now()) - $dt->daysInMonth);
 
-                    if ($order_month == 12) {
-                        $order_year += 1;
-                    }
-                } elseif ($order_year < $current_year) {
-                    $invoiceList[$value->id]["open"] = 'false';
-                }
-
+            //si la orden no está facturada y tiene dias entonces
+            if(intval($diferenciaDicas) > $configEntity['DayOff']) {
+                $invoiceList[$value->id]["open"] = false;
             }
 
         }
@@ -192,22 +187,17 @@ class CoreModule
                 $invoiceList[$value->id]["open"] = false;
             }
 
-            // Validate payment date vs current date
-            if ($order_month != $current_month) {
-                $order_day = date("d", strtotime($value->datepaid));
+            //vamos sobre el tiempo de tolerancia para facturar.
+            Carbon::setLocale('es');
+            $fpago = explode("-", date("Y-m-d", strtotime($value->datepaid)));
+            $dt = Carbon::createFromDate($fpago[0], $fpago[1], $fpago[2]);
 
-                if ($order_month < $current_month) {
-                    if (intval($current_day) > $configEntity['dayOff']) {
-                        $invoiceList[$value->id]["open"] = false;
-                    }
+            //Sacamos la diferencia
+            $diferenciaDicas =  ($dt->diffInDays(Carbon::now()) - $dt->daysInMonth);
 
-                    if ($order_month == 12) {
-                        $order_year += 1;
-                    }
-                } elseif ($order_year < $current_year) {
-                    $invoiceList[$value->id]["open"] = false;
-                }
-
+            //si la orden no está facturada y tiene dias entonces
+            if(intval($diferenciaDicas) > $configEntity['DayOff']) {
+                $invoiceList[$value->id]["open"] = false;
             }
 
         }
