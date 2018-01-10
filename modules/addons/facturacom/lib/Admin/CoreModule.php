@@ -1,9 +1,8 @@
 <?php
 
 include_once dirname(__FILE__) . '/Client.php';
-use Illuminate\Database\Capsule\Manager as Capsule;
 use Carbon\Carbon;
-
+use Illuminate\Database\Capsule\Manager as Capsule;
 
 class CoreModule
 {
@@ -110,10 +109,10 @@ class CoreModule
             $dt = Carbon::createFromDate($fpago[0], $fpago[1], $fpago[2]);
 
             //Sacamos la diferencia
-            $diferenciaDicas =  ($dt->diffInDays(Carbon::now()) - $dt->daysInMonth);
+            $diferenciaDicas = ($dt->diffInDays(Carbon::now()) - $dt->daysInMonth);
 
             //si la orden no está facturada y tiene dias entonces
-            if(intval($diferenciaDicas) > $configEntity['DayOff']) {
+            if (intval($diferenciaDicas) > $configEntity['DayOff']) {
                 $invoiceList[$value->id]["open"] = false;
             }
 
@@ -193,10 +192,10 @@ class CoreModule
             $dt = Carbon::createFromDate($fpago[0], $fpago[1], $fpago[2]);
 
             //Sacamos la diferencia
-            $diferenciaDicas =  ($dt->diffInDays(Carbon::now()) - $dt->daysInMonth);
+            $diferenciaDicas = ($dt->diffInDays(Carbon::now()) - $dt->daysInMonth);
 
             //si la orden no está facturada y tiene dias entonces
-            if(intval($diferenciaDicas) > $configEntity['DayOff']) {
+            if (intval($diferenciaDicas) > $configEntity['DayOff']) {
                 $invoiceList[$value->id]["open"] = false;
             }
 
@@ -242,8 +241,8 @@ class CoreModule
         $itemsObj = Capsule::table('tblinvoiceitems')
             ->select("tblinvoiceitems.*", "tblhosting.id as hosting", "tblproducts.id as product", "tblhosting.packageid as package")
             ->join('tblinvoices', 'tblinvoices.id', '=', 'tblinvoiceitems.invoiceid')
-            ->join('tblhosting', 'tblhosting.id', '=', 'tblinvoiceitems.relid')
-            ->join('tblproducts', 'tblproducts.id', '=', 'tblhosting.packageid')
+            ->leftJoin('tblhosting', 'tblhosting.id', '=', 'tblinvoiceitems.relid')
+            ->leftJoin('tblproducts', 'tblproducts.id', '=', 'tblhosting.packageid')
             ->where('tblinvoiceitems.invoiceid', $invoiceId)
             ->get();
 
@@ -261,18 +260,26 @@ class CoreModule
                 ->where('tblproductconfiglinks.pid', $value->product)
                 ->get();
 
-            foreach ($configSat as $ksat => $valsat) {
-                if ($valsat->Nombre == 'ClaveProdServ') {
-                    $itemsOrder[$key]->ClaveProdServ = $valsat->Valor;
+            if (count($configSat) > 0) {
+
+                foreach ($configSat as $ksat => $valsat) {
+                    if ($valsat->Nombre == 'ClaveProdServ') {
+                        $itemsOrder[$key]->ClaveProdServ = $valsat->Valor;
+                    }
+
+                    if ($valsat->Nombre == 'ClaveUnidad') {
+                        $itemsOrder[$key]->ClaveUnidad = $valsat->Valor;
+                    }
+
+                    if ($valsat->Nombre == 'Unidad') {
+                        $itemsOrder[$key]->Unidad = $valsat->Valor;
+                    }
                 }
 
-                if ($valsat->Nombre == 'ClaveUnidad') {
-                    $itemsOrder[$key]->ClaveUnidad = $valsat->Valor;
-                }
-
-                if ($valsat->Nombre == 'Unidad') {
-                    $itemsOrder[$key]->Unidad = $valsat->Valor;
-                }
+            } else {
+                $itemsOrder[$key]->ClaveProdServ = $Setting['ClaveProdServ'];
+                $itemsOrder[$key]->ClaveUnidad = $Setting['ClaveUnidad'];
+                $itemsOrder[$key]->Unidad = $Setting['Unidad'];
             }
         }
 
@@ -473,7 +480,7 @@ class CoreModule
                 $productPrice = $value->amount;
             }
 
-            $importeImpuesto = ($productPrice * 0.16);
+            $importeImpuesto = round(($productPrice * 0.16), 2);
 
             $product = [
                 'ClaveProdServ' => $value->ClaveProdServ,
@@ -551,7 +558,6 @@ class CoreModule
             return header("Location: " . $uri);
         }
 
-
         //Conectamos con api factura.com y tramos todas las facturas
         $restApi = new Client;
         $request = $restApi->get($uri, [
@@ -575,7 +581,7 @@ class CoreModule
 
                 header('Content-Type: application/pdf');
                 header("Content-Transfer-Encoding: Binary");
-                header('Content-disposition: attachment; filename="' . $filename.'.pdf"');
+                header('Content-disposition: attachment; filename="' . $filename . '.pdf"');
                 echo $request;
                 break;
         }
