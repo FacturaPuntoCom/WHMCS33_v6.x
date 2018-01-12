@@ -556,7 +556,13 @@ class CoreModule
             ],
         ]);
 
-        return $createInvoice;
+        $response = $createInvoice;
+
+        if($response['response'] == 'error' && is_array($response['message'])) {
+            $response = ['response' => 'error', 'message' => $response['message']['message']];
+        }
+
+        return $response;
     }
 
     public function getCFDI($params)
