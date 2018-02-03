@@ -463,7 +463,7 @@ class CoreModule
                 'telefono' => $clientData["fiscal-telefono"],
                 'razons' => $clientData["fiscal-nombre"],
                 'rfc' => $clientData["fiscal-rfc"],
-                'calle' => $clientData["fiscal-nombre"],
+                'calle' => $clientData["fiscal-calle"],
                 'numero_exterior' => $clientData["fiscal-exterior"],
                 'numero_interior' => $clientData["fiscal-interior"],
                 'codpos' => $clientData["fiscal-cp"],
@@ -494,14 +494,24 @@ class CoreModule
         //Adding concepts to invoice
         foreach ($itemsCollection as $value) {
             $productPrice = 0;
+            $TipoFactor = 'Tasa';
+            $TasaOCuota = 0.16;
 
             if ($Setting["IVA"] == 'on') {
-                $productPrice = $value->amount / 1.16;
+                $productPrice = round(($value->amount / 1.16), 2);
             } else {
                 $productPrice = $value->amount;
             }
 
             $importeImpuesto = round(($productPrice * 0.16), 2);
+
+            //Para productos cero pesos
+            if($importeImpuesto <  1) {
+                $productPrice = 0.01;
+                $TipoFactor = 'Exento';
+                $importeImpuesto = 0;
+                $TasaOCuota = 0;
+            }
 
             $product = [
                 'ClaveProdServ' => $value->ClaveProdServ,
@@ -513,7 +523,7 @@ class CoreModule
                 'Descuento' => '0',
                 'Impuestos' => [
                     'Traslados' => [
-                        ['Base' => $productPrice, 'Impuesto' => '002', 'TipoFactor' => 'Tasa', 'TasaOCuota' => '0.16', 'Importe' => $importeImpuesto],
+                        ['Base' => $productPrice, 'Impuesto' => '002', 'TipoFactor' => $TipoFactor, 'TasaOCuota' => $TasaOCuota, 'Importe' => $importeImpuesto],
                     ],
                 ],
             ];
