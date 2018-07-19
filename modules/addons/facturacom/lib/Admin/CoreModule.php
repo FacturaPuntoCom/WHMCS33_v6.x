@@ -520,15 +520,15 @@ class CoreModule
             $importeImpuesto = round(($productPrice * 0.16), 2);
 
             //Para productos cero pesos
-            if($importeImpuesto <  1) {
+            if($importeImpuesto >=  0 && $importeImpuesto <=  1) {
                 $productPrice = 0.01;
                 $TipoFactor = 'Exento';
                 $importeImpuesto = 0;
                 $TasaOCuota = 0;
             } else if ($importeImpuesto < 0) {
-				$Descuento += ($productPrice * -1);
-				continue;
-			}
+              $Descuento += ($productPrice * -1);
+              continue;
+            }
 
             $product = [
                 'ClaveProdServ' => $value->ClaveProdServ,
