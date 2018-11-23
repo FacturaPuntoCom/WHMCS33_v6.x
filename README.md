@@ -1,6 +1,11 @@
-# WHMCS Addon de Factura.com versión 2.1.2
+# WHMCS Addon de Factura.com versión 2.1.4
 
 # Changelog
+
+## [2.1.4] - 2018-11-23
+
+### Fixed
+- Se corrigió la validación que permite traer facturas cotejandolas con pedidos.
 
 ## [2.1.2] - 2018-10-16
 
