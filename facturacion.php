@@ -24,12 +24,19 @@ if ($ca->isLoggedIn()) {
     $urlCallApi = $CoreModule->getURL($Settings);
     $systemURL = $CoreModule->getSystemURL();
 
-    //traemos todas las facturas.
+    //Todas las orders del usuario
+    $OrdersWHMCS = $CoreModule->getWhmcsInvoices($ca->getUserID());
+    $clientInvoices = [];
+    $clientOrders = [];
+
+    foreach($OrdersWHMCS as $key => $value) {
+        $clientOrders[] = $key;
+    }
+
+    //traemos todas las facturas. Si deseas cotejar pedidos elimina null e incorpora $clientOrders 
     $Invoices = $CoreModule->getInvoicesFacturacom($ca->getUserID(), null);
     $clientInvoices = [];
 
-    //Todas las orders del usuario
-    $OrdersWHMCS = $CoreModule->getWhmcsInvoices($ca->getUserID());
 
     //Todas las orders de wh
     $InvoicesWHMCS = $CoreModule->getWhmcsInvoicesAll($ca->getUserID());
