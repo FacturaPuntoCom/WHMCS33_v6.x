@@ -34,7 +34,7 @@ if ($ca->isLoggedIn()) {
     }
 
     //traemos todas las facturas. Si deseas cotejar pedidos elimina null e incorpora $clientOrders 
-    $Invoices = $CoreModule->getInvoicesFacturacom($ca->getUserID(), null);
+    $Invoices = $CoreModule->getInvoicesFacturacom($ca->getUserID(), $clientOrders);
     $clientInvoices = [];
 
 
