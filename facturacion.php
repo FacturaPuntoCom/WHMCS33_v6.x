@@ -50,6 +50,7 @@ if ($ca->isLoggedIn()) {
 
     //Traemos los usos de CFDI
     $UsosCFDI = $CoreModule->getUsoCFDI();
+    $Regimenes = $CoreModule->getRegimenesFiscales();
 
     $ca->caching = false;
     $ca->assign('clientW', $ca->getUserID());
@@ -60,6 +61,7 @@ if ($ca->isLoggedIn()) {
     $ca->assign('serieInvoices', $Settings['Serie']);
     $ca->assign('UsoCFDI', $Settings['UsoCFDI']);
     $ca->assign('Usos', $UsosCFDI);
+    $ca->assign('Regimenes', $Regimenes);
 
 } else {
 
