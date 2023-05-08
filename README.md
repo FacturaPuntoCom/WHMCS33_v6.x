@@ -1,6 +1,13 @@
 # WHMCS Addon de Factura.com versión 2.3.0
 
 ### Added
+- Se ha cambiado el host https://factura.com por https://api.factura.com
+- Se cambiaron los endpoints de listar cfdis, enviar correos para mejorar el tiempo de respuesta.
+### Fixed
+- Se corrigió la duplicidad de los clientes al reintentar la creación de la factura. 
+## [2.4.0] - 2023-05-03
+
+### Added
 - Se sustituye la versión de CFDI 3.3 por 4.0
 ## [2.3.0] - 2022-04-09
 
